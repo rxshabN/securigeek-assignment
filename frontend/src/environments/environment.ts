@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: '', // Your local backend URL
+  apiUrl: 'https://securigeek-assignment.onrender.com', // Your local backend URL
 };
