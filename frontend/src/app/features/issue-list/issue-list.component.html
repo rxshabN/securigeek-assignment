@@ -1,0 +1,133 @@
+<div class="container">
+  <h1>Issue Tracker</h1>
+
+  <mat-toolbar class="filter-toolbar">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search by Title</mat-label>
+      <input
+        matInput
+        [formControl]="searchControl"
+        placeholder="e.g. Login Bug"
+      />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Status</mat-label>
+      <mat-select [formControl]="statusControl">
+        <mat-option value="">All</mat-option>
+        <mat-option value="open">Open</mat-option>
+        <mat-option value="in-progress">In-Progress</mat-option>
+        <mat-option value="closed">Closed</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Priority</mat-label>
+      <mat-select [formControl]="priorityControl">
+        <mat-option value="">All</mat-option>
+        <mat-option value="low">Low</mat-option>
+        <mat-option value="medium">Medium</mat-option>
+        <mat-option value="high">High</mat-option>
+        <mat-option value="critical">Critical</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <span class="spacer"></span>
+
+    <button mat-flat-button color="primary" (click)="openIssueForm()">
+      <mat-icon>add</mat-icon> Create Issue
+    </button>
+  </mat-toolbar>
+
+  <div class="table-container mat-elevation-z8">
+    <table
+      mat-table
+      [dataSource]="issues"
+      matSort
+      (matSortChange)="loadIssues()"
+    >
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>ID</th>
+        <td mat-cell *matCellDef="let issue" class="issue-id">
+          {{ issue.id | slice : 0 : 8 }}...
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="title">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
+        <td mat-cell *matCellDef="let issue">{{ issue.title }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+        <td mat-cell *matCellDef="let issue">
+          <span class="status-chip" [ngClass]="issue.status">{{
+            issue.status
+          }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="priority">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Priority</th>
+        <td mat-cell *matCellDef="let issue">
+          <span class="priority-chip" [ngClass]="issue.priority">{{
+            issue.priority
+          }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="assignee">
+        <th mat-header-cell *matHeaderCellDef>Assignee</th>
+        <td mat-cell *matCellDef="let issue">
+          {{ issue.assignee || "Unassigned" }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="updatedAt">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Last Updated</th>
+        <td mat-cell *matCellDef="let issue">
+          {{ issue.updatedAt | date : "short" }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let issue">
+          <button
+            mat-icon-button
+            color="primary"
+            (click)="openIssueForm(issue); $event.stopPropagation()"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        (click)="showIssueDetails(row)"
+      ></tr>
+    </table>
+
+    <mat-paginator
+      [pageSizeOptions]="[5, 10, 20]"
+      showFirstLastButtons
+    ></mat-paginator>
+  </div>
+
+  <mat-drawer-container class="detail-container" hasBackdrop="true">
+    <mat-drawer #drawer mode="over" position="end">
+      <div class="drawer-content" *ngIf="selectedIssue">
+        <h2>Issue Details</h2>
+        <pre>{{ selectedIssue | json }}</pre>
+        <button mat-stroked-button color="warn" (click)="drawer.close()">
+          Close
+        </button>
+      </div>
+    </mat-drawer>
+    <mat-drawer-content></mat-drawer-content>
+  </mat-drawer-container>
+</div>
